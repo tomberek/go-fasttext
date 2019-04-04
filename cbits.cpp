@@ -28,9 +28,9 @@ struct membuf : std::streambuf {
 template <class Dest, class Source> inline Dest bit_cast(Source const &source) {
   static_assert(sizeof(Dest) == sizeof(Source),
                 "size of destination and source objects must be equal");
-  static_assert(std::is_trivially_copyable<Dest>::value,
+  static_assert(std::has_trivial_copy_constructor<Dest>::value,
                 "destination type must be trivially copyable.");
-  static_assert(std::is_trivially_copyable<Source>::value,
+  static_assert(std::has_trivial_copy_constructor<Source>::value,
                 "source type must be trivially copyable");
 
   Dest dest;
