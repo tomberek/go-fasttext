@@ -2,7 +2,7 @@
 
 package main
 
-import "github.com/rai-project/go-fasttext/cmd"
+import "github.com/clinjie/go-fasttext/cmd"
 
 func main() {
 	cmd.Execute()

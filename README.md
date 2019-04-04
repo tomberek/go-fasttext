@@ -1,3 +1,7 @@
+forked from https://github.com/rai-project/go-fasttext
+
+fixed gcc version<5 bugs
+
 # Go-FastText
 
 Golang bindings to the fasttext library.
