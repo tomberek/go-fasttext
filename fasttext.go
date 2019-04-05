@@ -44,14 +44,21 @@ func (handle *Model) Close() error {
 	return nil
 }
 
+func (handle *Model) GetLabelNum() int {
+	var label_num int
+	label_num = int(C.getLabelNum(handle.handle))
+	return label_num
+}
+
 // Performs model prediction
-func (handle *Model) Predict(query string) (Predictions, error) {
+func (handle *Model) Predict(query string, k int) (Predictions, error) {
 	cquery := C.CString(query)
 	defer C.free(unsafe.Pointer(cquery))
 
+	ck := C.int(k)
 	// Call the Predict function defined in cbits.cpp
 	// passing in the model handle and the query string
-	r := C.Predict(handle.handle, cquery)
+	r := C.Predict(handle.handle, cquery, ck)
 	// the C code returns a c string which we need to
 	// convert to a go string
 	defer C.free(unsafe.Pointer(r))

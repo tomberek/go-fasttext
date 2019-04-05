@@ -28,10 +28,10 @@ struct membuf : std::streambuf {
 template <class Dest, class Source> inline Dest bit_cast(Source const &source) {
   static_assert(sizeof(Dest) == sizeof(Source),
                 "size of destination and source objects must be equal");
-  static_assert(std::has_trivial_copy_constructor<Dest>::value,
+  /*static_assert(std::is_trivially_copy_constructible<Dest>::value,
                 "destination type must be trivially copyable.");
-  static_assert(std::has_trivial_copy_constructor<Source>::value,
-                "source type must be trivially copyable");
+  static_assert(std::is_trivially_copy_constructible<Source>::value,
+                "source type must be trivially copyable");*/
 
   Dest dest;
   std::memcpy(&dest, &source, sizeof(dest));
@@ -51,14 +51,14 @@ void DeleteHandle(FastTextHandle handle) {
   }
 }
 
-char *Predict(FastTextHandle handle, char *query) {
+char *Predict(FastTextHandle handle, char *query, int k) {
   auto model = bit_cast<fasttext::FastText *>(handle);
 
   membuf sbuf(query, query + strlen(query));
   std::istream in(&sbuf);
 
   std::vector<std::pair<fasttext::real, std::string>> predictions;
-  model->predict(in, 4, predictions);
+  model->predict(in, k, predictions);
 
   size_t ii = 0;
   auto res = json::array();
@@ -101,4 +101,10 @@ char *Wordvec(FastTextHandle handle, char *query) {
   }
 
   return strdup(res.dump().c_str());
+}
+
+int getLabelNum(FastTextHandle handle){
+  auto model = bit_cast<fasttext::FastText *>(handle);
+  int label_num = model->getDictionary()->nlabels();
+  return label_num;
 }
