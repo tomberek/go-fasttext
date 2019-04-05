@@ -2,6 +2,13 @@
 
 Golang bindings to the fasttext library.
 
+## Install
+
+```
+go get -u github.com/Unknwon/com
+go get -u github.com/clinjie/go-fasttext
+```
+
 ## Usage
 
 
@@ -11,7 +18,7 @@ package main
 import (
         "fmt"
 
-        fasttext "code.byted.org/zhupeihao/go-fasttext"
+        fasttext "github.com/clinjie/go-fasttext"
         "github.com/Unknwon/com"
 )
 
