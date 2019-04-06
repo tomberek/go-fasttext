@@ -25,23 +25,8 @@ import (
 
 var modelPath string = ''//model_path
 
-func detect(model *fasttext.Model, str string ,k int) {
-    if k==-1 {
-        k = model.GetLabelNum()
-    }
-    
-    preds, err := model.Predict(str,k)
-    if err != nil {
-            fmt.Println(err)
-            return
-    }
-
-    fmt.Println(preds)
-
-}
-
 func main() {
-    
+
     if !com.IsFile(modelPath) {
             fmt.Println("the file %s does not exist", modelPath)
             return
@@ -49,8 +34,14 @@ func main() {
 
     model := fasttext.Open(modelPath)
     defer model.Close()
-    
-    detect(model, "绿色守护着你", 5)
-    detect(model, "you are so beautiful", -1)
+
+    preds, _ := model.Predict("8 9", 4)
+    fmt.Println(preds)
+    preds, _ = model.Predict("우리 및 말에서 유래한 한국어 낱말.")
+    fmt.Println(preds)
+    preds, _ = model.Predict("what are you", -1)
+    fmt.Println(preds)
+
+    return
 }
 ```

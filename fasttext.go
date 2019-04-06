@@ -15,8 +15,9 @@ import (
 // A model object. Effectively a wrapper
 // around the C fasttext handle
 type Model struct {
-	path   string
-	handle C.FastTextHandle
+	path     string
+	labelNum int
+	handle   C.FastTextHandle
 }
 
 // Opens a model from a path and returns a model
@@ -29,9 +30,14 @@ func Open(path string) *Model {
 	// See https://github.com/golang/go/wiki/cgo
 	defer C.free(unsafe.Pointer(cpath))
 
+	handle := C.NewHandle(cpath)
+
+	labelNum := int(C.getLabelNum(handle))
+
 	return &Model{
-		path:   path,
-		handle: C.NewHandle(cpath),
+		path:     path,
+		labelNum: labelNum,
+		handle:   handle,
 	}
 }
 
@@ -45,17 +51,33 @@ func (handle *Model) Close() error {
 }
 
 func (handle *Model) GetLabelNum() int {
-	var label_num int
-	label_num = int(C.getLabelNum(handle.handle))
-	return label_num
+	labelNum := handle.labelNum
+	if labelNum == 0 {
+		handle.labelNum = int(C.getLabelNum(handle.handle))
+	}
+	return handle.labelNum
 }
 
 // Performs model prediction
-func (handle *Model) Predict(query string, k int) (Predictions, error) {
+func (handle *Model) Predict(query string, k ...int) (Predictions, error) {
+
 	cquery := C.CString(query)
 	defer C.free(unsafe.Pointer(cquery))
 
-	ck := C.int(k)
+	nk := 0
+	for _, number := range k {
+		nk += number
+	}
+
+	if nk == -1 {
+		nk = handle.labelNum
+	}
+
+	if nk == 0 {
+		nk = 1
+	}
+
+	ck := C.int(nk)
 	// Call the Predict function defined in cbits.cpp
 	// passing in the model handle and the query string
 	r := C.Predict(handle.handle, cquery, ck)
@@ -108,3 +130,4 @@ func (handle *Model) Wordvec(query string) (Vectors, error) {
 
 	return vectors, nil
 }
+
