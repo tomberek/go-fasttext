@@ -60,7 +60,9 @@ func (handle *Model) GetLabelNum() int {
 
 // Performs model prediction
 func (handle *Model) Predict(query string, k ...int) (Predictions, error) {
-
+  if query[len(query)-1] != '\n' {
+		query += "\n"
+	}
 	cquery := C.CString(query)
 	defer C.free(unsafe.Pointer(cquery))
 
