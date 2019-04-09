@@ -63,7 +63,7 @@ char *Predict(FastTextHandle handle, char *query, int k) {
   size_t ii = 0;
   auto res = json::array();
   for (const auto it : predictions) {
-    float p = std::exp(it.first);
+    float p = it.first;
     res.push_back({
         {"index", ii++},
         {"probability", p},
